@@ -1,0 +1,76 @@
+#!/bin/bash
+
+# Definitions
+MACPORT_SELECT_FOLDER="/opt/local/etc/select/"
+
+# Functions
+function updateRubyGems {
+	echo "Updating ruby gems ..."
+	sudo gem update
+}
+
+function updateMacports {
+	echo "Updating ports base and tree ..."
+	sudo port selfupdate
+
+	echo "Updating outdated ports ..."
+	sudo port upgrade outdated
+}
+
+function selectActiveMacports {
+	echo "Select active port for groups ..."
+	for PORTGROUP in $( ls $MACPORT_SELECT_FOLDER ); do
+		port select --list $PORTGROUP
+		#echo "Select one by typing it's name or press enter to skip: "
+		SKIPCOUNTER=0
+		while [ $SKIPCOUNTER -lt 5 ]; do
+			read -p "Select one by typing it's name or press enter to skip: " INPUT
+			if [ "x$INPUT" = "x" ]; then
+				echo " skip"
+				break
+			else
+				sudo port select --set $PORTGROUP $INPUT
+				if [ $? -eq 0 ]; then
+					#echo "$PORTGROUP set to $INPUT"
+					break
+					#else
+					#echo "Error"
+				fi
+			fi
+			#echo "Counter: $SKIPCOUNTER"
+			let SKIPCOUNTER+=1
+		done
+	done
+}
+
+function printHeader {
+	printf "\n\n"
+	echo "  __  _____  ___  ___ __________  __________  ____  __ "
+	echo " / / / / _ \/ _ \/ _ /_  __/ __/ /_  __/ __ \/ __ \/ / "
+	echo "/ /_/ / ___/ // / __ |/ / / _/    / / / /_/ / /_/ / /__"
+	echo "\____/_/  /____/_/ |_/_/ /___/   /_/  \____/\____/____/"
+	printf "\n\n"
+}
+
+function printFooter {
+	echo "    ___               "
+	echo "   / _ \___  ___  ___ "
+	echo "  / // / _ \/ _ \/ -_)"
+	echo " /____/\___/_//_/\__/ "
+	echo
+	echo Every thing is up to date!
+	echo Bye bye!
+}
+
+#function waitForAnyKey {
+#	echo "Press any key to continue ..."
+#	read -n 1 -s
+#}
+
+
+# Workflow
+printHeader
+updateMacports
+updateRubyGems
+selectActiveMacports
+printFooter

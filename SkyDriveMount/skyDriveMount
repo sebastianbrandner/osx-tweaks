@@ -1,0 +1,3 @@
+#!/bin/bash
+
+/opt/local/bin/bindfs -o volname=Documents /Users/sebastian/SkyDrive/Sebastian/Documents /Users/sebastian/Documents
